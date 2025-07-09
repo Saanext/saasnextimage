@@ -41,12 +41,13 @@ const generateCarouselTextPrompt = ai.definePrompt({
   output: {schema: z.object({ contentOptions: z.array(z.string()).length(3) })},
   prompt: `You are a social media expert specializing in creating engaging, short-form posts for SAASNEXT, inspired by Swiss design principles (clean, grid-based, high-impact).
 
-  Generate exactly 3 different post content options based on the selected niche. Each option must be very short and include:
+  Generate exactly 3 different post content options based on the selected niche. Each option must be very short, precise, and engaging. It must include:
   1. A strong, attention-grabbing hook.
   2. A clear, concise message.
   3. A compelling call-to-action (CTA).
   
-  Keep the total text for each option brief and punchy, suitable for a visually-driven post. Do not include any hashtags.
+  IMPORTANT: The total text for each option must be extremely brief and punchy, suitable for a visually-driven graphic.
+  Do NOT include any hashtags, links, or URLs in your output.
 
   Niche: {{{niche}}}
 
@@ -76,14 +77,14 @@ const generateCarouselPostFlow = ai.defineFlow(
 
     const imagePromises = textOptions.map(async (text) => {
       let imagePrompt = '';
-      const colorThemePrompt = "The color palette for any visual elements must be strictly limited to dark black and dark orange. The overall design should be high-contrast and professional.";
+      const colorThemePrompt = "The color palette for any visual elements must be strictly limited to dark black and dark orange. The text must be white. The overall design should be high-contrast and professional.";
       
       if (input.imageStyle === 'Bold Typographic') {
-        imagePrompt = `A visually striking, text-only image for a social media post in a 2:3 aspect ratio, in the style of Swiss design. Use a strong grid and bold sans-serif typography. Feature the following text prominently in white: "${text}". The image must be clean, modern, professional, and high-quality. ${colorThemePrompt}`;
+        imagePrompt = `A visually striking, text-only image for a social media post in a 2:3 aspect ratio, in the style of Swiss design. Use a strong grid and bold sans-serif typography. Feature the following text prominently: "${text}". The image must be clean, modern, professional, and high-quality. ${colorThemePrompt}`;
       } else if (input.imageStyle === '3D Art') {
-        imagePrompt = `A high-quality 3D artistic render for a social media post in a 2:3 aspect ratio, composed with Swiss design principles. The image should be clean, professional, and use a grid-based layout. It must incorporate the following text in white: "${text}". ${colorThemePrompt}`;
+        imagePrompt = `A high-quality 3D artistic render for a social media post in a 2:3 aspect ratio, composed with Swiss design principles. The image should be clean, professional, and use a grid-based layout. It must incorporate the following text: "${text}". ${colorThemePrompt}`;
       } else if (input.imageStyle === 'Minimal') {
-         imagePrompt = `A minimal and clean high-quality social media graphic in a 2:3 aspect ratio, inspired by Swiss design. Use a grid layout and sans-serif fonts. Feature the following text prominently in white: "${text}". The design must be clean, professional, and modern. ${colorThemePrompt}`;
+         imagePrompt = `A minimal and clean high-quality social media graphic in a 2:3 aspect ratio, inspired by Swiss design. Use a grid layout and sans-serif fonts. Feature the following text prominently: "${text}". The design must be clean, professional, and modern. ${colorThemePrompt}`;
       }
       
       const { media } = await ai.generate({
