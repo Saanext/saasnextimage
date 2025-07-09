@@ -15,6 +15,7 @@ const NicheEnum = z.enum(['Web Development', 'Lead Generation', 'AI Solutions', 
 
 const GenerateCarouselPostInputSchema = z.object({
   niche: NicheEnum.describe('The niche for which to generate carousel post content.'),
+  userIdeas: z.string().optional().describe('Optional user ideas to guide content generation.'),
 });
 export type GenerateCarouselPostInput = z.infer<typeof GenerateCarouselPostInputSchema>;
 
@@ -36,6 +37,10 @@ const prompt = ai.definePrompt({
   Generate 3 different carousel post content options based on the selected niche. Each option should be concise and attention-grabbing.
 
   Niche: {{{niche}}}
+
+  {{#if userIdeas}}
+  The user has provided some ideas, use them as inspiration: {{{userIdeas}}}
+  {{/if}}
 
   The carousel post content options should be tailored to the specified niche and designed to maximize user engagement.
   Ensure the content is appropriate for a professional audience.

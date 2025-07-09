@@ -47,6 +47,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { SaasNextLogo } from "./icons";
+import { Textarea } from "./ui/textarea";
 
 const NICHES = [
   {
@@ -79,6 +80,7 @@ const FormSchema = z.object({
   niche: z.enum(["Web Development", "Lead Generation", "AI Solutions", "CEO Diary"], {
     required_error: "You need to select a niche.",
   }),
+  userIdeas: z.string().optional(),
 });
 
 export function CarouselGenerator() {
@@ -154,7 +156,7 @@ export function CarouselGenerator() {
         <CardHeader>
           <CardTitle>Choose Your Niche</CardTitle>
           <CardDescription>
-            Select a topic to generate posts for.
+            Select a topic and provide your ideas to generate posts.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -190,6 +192,23 @@ export function CarouselGenerator() {
                           </FormItem>
                         ))}
                       </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="userIdeas"
+                render={({ field }) => (
+                  <FormItem className="mt-6">
+                    <FormLabel>Your Ideas (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="e.g., 'A post about the top 5 javascript frameworks' or 'why AI is the future of marketing'"
+                        className="resize-none"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
