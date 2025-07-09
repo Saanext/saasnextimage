@@ -11,11 +11,13 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const ImageStyleEnum = z.enum(['Minimal', '3D Art', 'Bold Typographic']);
+const ImageStyleEnum = z.enum(['Minimal', '3D Art', 'Bold Typographic', 'Realistic']);
+const NicheEnum = z.enum(['Web Development', 'Lead Generation', 'AI Solutions', 'CEO Diary']);
 
 const GenerateCarouselImagesInputSchema = z.object({
   contentOptions: z.array(z.string()).describe('The text content for the carousel posts.'),
   imageStyle: ImageStyleEnum.describe('The desired image style for the carousel post.'),
+  niche: NicheEnum.describe('The selected niche to guide image generation.'),
 });
 export type GenerateCarouselImagesInput = z.infer<typeof GenerateCarouselImagesInputSchema>;
 
@@ -49,6 +51,8 @@ const generateCarouselImagesFlow = ai.defineFlow(
         imagePrompt = `Generate a high-end, abstract 3D artistic render for a social media post, framed in a 2:3 aspect ratio. The composition must follow Swiss design principles, featuring a clean, grid-based layout, and a professional aesthetic. Integrate subtle, realistic lighting and shadows to give depth to geometric 3D shapes. The text "${text}" should be elegantly integrated into the 3D scene. The overall feel should be sophisticated, modern, and visually captivating. ${colorThemePrompt}`;
       } else if (input.imageStyle === 'Minimal') {
          imagePrompt = `Design an ultra-minimalist and elegant social media graphic in a 2:3 aspect ratio, deeply inspired by Swiss design. The focus should be on generous use of negative space, a precise grid layout, and crisp, light sans-serif typography. Include only essential elements to convey the message clearly. Feature the following text with sophisticated placement: "${text}". The aesthetic must be clean, professional, modern, and serene. ${colorThemePrompt}`;
+      } else if (input.imageStyle === 'Realistic') {
+        imagePrompt = `Generate a high-quality, professional image for a social media post with a 2:3 aspect ratio, relevant to the niche of "${input.niche}". The image should have a photorealistic quality in its subjects and composition, but adhere to a specific artistic color palette. The text "${text}" should be integrated into the image with an elegant, modern, and readable font. ${colorThemePrompt}`;
       }
       
       const imageResult = await ai.generate({

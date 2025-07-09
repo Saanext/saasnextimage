@@ -103,13 +103,19 @@ const STYLES = [
     icon: Bold,
     description: "Text-focused, impactful, and modern.",
   },
+  {
+    value: "Realistic",
+    label: "Realistic",
+    icon: ImageIcon,
+    description: "Photorealistic images of your niche.",
+  },
 ] as const;
 
 const FormSchema = z.object({
   niche: z.enum(["Web Development", "Lead Generation", "AI Solutions", "CEO Diary"], {
     required_error: "You need to select a niche.",
   }),
-  imageStyle: z.enum(["Minimal", "3D Art", "Bold Typographic"], {
+  imageStyle: z.enum(["Minimal", "3D Art", "Bold Typographic", "Realistic"], {
     required_error: "You need to select an image style.",
   }),
   userIdeas: z.string().optional(),
@@ -157,7 +163,7 @@ export function CarouselGenerator() {
   }
   
   async function onGenerateImages() {
-    const imageStyle = form.getValues("imageStyle");
+    const { imageStyle, niche } = form.getValues();
     if (!generatedText || !imageStyle) {
       toast({
         variant: "destructive",
@@ -173,6 +179,7 @@ export function CarouselGenerator() {
       const imageResult = await generateCarouselImages({
         contentOptions: generatedText.contentOptions,
         imageStyle: imageStyle,
+        niche,
       });
 
       const finalContent: FinalGeneratedContent = {
