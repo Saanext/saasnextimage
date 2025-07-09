@@ -46,7 +46,7 @@ const generateCarouselTextPrompt = ai.definePrompt({
   2. A clear, concise message.
   3. A compelling call-to-action (CTA).
   
-  Keep the total text for each option brief and punchy, suitable for a visually-driven post.
+  Keep the total text for each option brief and punchy, suitable for a visually-driven post. Do not include any hashtags.
 
   Niche: {{{niche}}}
 

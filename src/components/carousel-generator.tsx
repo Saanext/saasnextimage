@@ -320,22 +320,15 @@ export function CarouselGenerator() {
                  <CarouselItem key={index}>
                    <div className="p-1">
                      <Card className="bg-background overflow-hidden">
-                       <CardContent className="relative flex flex-col items-center justify-center p-6 aspect-[2/3]">
+                       <CardContent className="relative p-0 aspect-[2/3]">
                           <Image
                             src={item.image}
                             alt={`Generated image for post: ${item.content}`}
                             fill
-                            className="object-cover z-0"
+                            className="object-cover"
                           />
-                          <div className="absolute inset-0 bg-black/50 z-10" />
-                          <div className="relative z-20 flex flex-col items-center justify-center text-center p-4">
-                            <SaasNextLogo className="h-10 w-auto text-white mb-6" />
-                            <p className="text-xl md:text-2xl font-semibold leading-relaxed text-white">
-                              {item.content}
-                            </p>
-                          </div>
                        </CardContent>
-                       <CardFooter className="flex justify-center gap-4">
+                       <CardFooter className="flex justify-center gap-4 py-4">
                          <Button variant="outline" size="icon" onClick={() => handleShare(item.content)}>
                            <Share2 className="h-5 w-5" />
                            <span className="sr-only">Share</span>
