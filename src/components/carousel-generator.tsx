@@ -138,18 +138,18 @@ export function CarouselGenerator() {
     }
   }
 
-  const handleShare = async (content: string) => {
+  const handleShare = async (caption: string) => {
     try {
       if (navigator.share) {
         await navigator.share({
           title: "SAASNEXT Carousel Post",
-          text: content,
+          text: caption,
         });
       } else {
-        await navigator.clipboard.writeText(content);
+        await navigator.clipboard.writeText(caption);
         toast({
           title: "Copied to clipboard!",
-          description: "Post content has been copied.",
+          description: "Post caption has been copied.",
         });
       }
     } catch (error) {
@@ -157,7 +157,7 @@ export function CarouselGenerator() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Could not share or copy content.",
+        description: "Could not share or copy caption.",
       });
     }
   };
@@ -328,8 +328,11 @@ export function CarouselGenerator() {
                             className="object-cover"
                           />
                        </CardContent>
-                       <CardFooter className="flex justify-center gap-4 py-4">
-                         <Button variant="outline" size="icon" onClick={() => handleShare(item.content)}>
+                        <CardContent className="p-4">
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{item.caption}</p>
+                        </CardContent>
+                       <CardFooter className="flex justify-center gap-4 pt-0 pb-4">
+                         <Button variant="outline" size="icon" onClick={() => handleShare(item.caption)}>
                            <Share2 className="h-5 w-5" />
                            <span className="sr-only">Share</span>
                          </Button>

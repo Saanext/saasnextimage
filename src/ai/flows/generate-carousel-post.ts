@@ -24,6 +24,7 @@ export type GenerateCarouselPostInput = z.infer<typeof GenerateCarouselPostInput
 const CarouselPostOptionSchema = z.object({
   content: z.string().describe('The text content for the carousel post.'),
   image: z.string().describe("A generated image for the post, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
+  caption: z.string().describe('The social media caption for the post, including a hook and 3 trending hashtags.'),
 });
 
 const GenerateCarouselPostOutputSchema = z.object({
@@ -60,6 +61,24 @@ const generateCarouselTextPrompt = ai.definePrompt({
   `, 
 });
 
+const generateCaptionPrompt = ai.definePrompt({
+  name: 'generateCaptionPrompt',
+  input: { schema: z.object({ content: z.string(), niche: NicheEnum }) },
+  output: { schema: z.object({ caption: z.string() }) },
+  prompt: `You are a social media expert. Create an engaging social media caption.
+
+  The caption MUST follow this structure:
+  1.  Start with a strong, attention-grabbing hook.
+  2.  Include the main message.
+  3.  End with exactly 3 relevant and trending hashtags for the given niche.
+
+  The main message is: "{{{content}}}"
+  The niche is: "{{{niche}}}"
+  
+  Return the output as a JSON object with a 'caption' key.
+  `,
+});
+
 
 const generateCarouselPostFlow = ai.defineFlow(
   {
@@ -75,7 +94,7 @@ const generateCarouselPostFlow = ai.defineFlow(
       return { contentOptions: [] };
     }
 
-    const imagePromises = textOptions.map(async (text) => {
+    const contentOptionsPromises = textOptions.map(async (text) => {
       let imagePrompt = '';
       const colorThemePrompt = "The color palette for any visual elements must be strictly limited to dark black and dark orange. The text must be white. The overall design should be high-contrast and professional.";
       
@@ -87,20 +106,25 @@ const generateCarouselPostFlow = ai.defineFlow(
          imagePrompt = `Design an ultra-minimalist and elegant social media graphic in a 2:3 aspect ratio, deeply inspired by Swiss design. The focus should be on generous use of negative space, a precise grid layout, and crisp, light sans-serif typography. Include only essential elements to convey the message clearly. Feature the following text with sophisticated placement: "${text}". The aesthetic must be clean, professional, modern, and serene. ${colorThemePrompt}`;
       }
       
-      const { media } = await ai.generate({
-        model: 'googleai/gemini-2.0-flash-preview-image-generation',
-        prompt: imagePrompt,
-        config: {
-          responseModalities: ['TEXT', 'IMAGE'],
-        },
-      });
+      const [imageResult, captionResult] = await Promise.all([
+        ai.generate({
+          model: 'googleai/gemini-2.0-flash-preview-image-generation',
+          prompt: imagePrompt,
+          config: {
+            responseModalities: ['TEXT', 'IMAGE'],
+          },
+        }),
+        generateCaptionPrompt({ content: text, niche: input.niche })
+      ]);
+      
       return {
         content: text,
-        image: media.url,
+        image: imageResult.media.url,
+        caption: captionResult.output?.caption || text,
       };
     });
 
-    const contentOptions = await Promise.all(imagePromises);
+    const contentOptions = await Promise.all(contentOptionsPromises);
 
     return { contentOptions };
   }
