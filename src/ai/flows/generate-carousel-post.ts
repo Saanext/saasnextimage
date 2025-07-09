@@ -76,14 +76,14 @@ const generateCarouselPostFlow = ai.defineFlow(
 
     const imagePromises = textOptions.map(async (text) => {
       let imagePrompt = '';
-      const colorThemePrompt = "The color palette must be strictly limited to dark black, dark orange, and white.";
+      const colorThemePrompt = "The color palette for any visual elements must be strictly limited to dark black and dark orange. The overall design should be high-contrast and professional.";
       
       if (input.imageStyle === 'Bold Typographic') {
-        imagePrompt = `A visually striking, text-only image for a social media post in a 2:3 aspect ratio, in the style of Swiss design. Use a strong grid, bold sans-serif typography, and a minimal color palette to feature the text "${text}". It should be clean, modern, and professional. The image must be high-quality. ${colorThemePrompt}`;
+        imagePrompt = `A visually striking, text-only image for a social media post in a 2:3 aspect ratio, in the style of Swiss design. Use a strong grid and bold sans-serif typography. Feature the following text prominently in white: "${text}". The image must be clean, modern, professional, and high-quality. ${colorThemePrompt}`;
       } else if (input.imageStyle === '3D Art') {
-        imagePrompt = `A high-quality 3D artistic render for a social media post in a 2:3 aspect ratio, composed with Swiss design principles. The image should be clean, professional, and use a grid-based layout. It should incorporate the text: "${text}". ${colorThemePrompt}`;
+        imagePrompt = `A high-quality 3D artistic render for a social media post in a 2:3 aspect ratio, composed with Swiss design principles. The image should be clean, professional, and use a grid-based layout. It must incorporate the following text in white: "${text}". ${colorThemePrompt}`;
       } else if (input.imageStyle === 'Minimal') {
-         imagePrompt = `A minimal and clean high-quality social media graphic in a 2:3 aspect ratio, inspired by Swiss design. It should feature the text "${text}" using a grid layout, sans-serif fonts, and a restricted color palette. Clean, professional, and modern. ${colorThemePrompt}`;
+         imagePrompt = `A minimal and clean high-quality social media graphic in a 2:3 aspect ratio, inspired by Swiss design. Use a grid layout and sans-serif fonts. Feature the following text prominently in white: "${text}". The design must be clean, professional, and modern. ${colorThemePrompt}`;
       }
       
       const { media } = await ai.generate({
