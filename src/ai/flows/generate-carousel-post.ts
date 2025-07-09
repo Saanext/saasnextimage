@@ -38,10 +38,10 @@ export async function generateCarouselPost(input: GenerateCarouselPostInput): Pr
 const generateCarouselTextPrompt = ai.definePrompt({
   name: 'generateCarouselTextPrompt',
   input: {schema: GenerateCarouselPostInputSchema},
-  output: {schema: z.object({ contentOptions: z.array(z.string()) })},
+  output: {schema: z.object({ contentOptions: z.array(z.string()).length(3) })},
   prompt: `You are a social media expert specializing in creating engaging, short-form posts for SAASNEXT, inspired by Swiss design principles (clean, grid-based, high-impact).
 
-  Generate 3 different post content options based on the selected niche. Each option must be very short and include:
+  Generate exactly 3 different post content options based on the selected niche. Each option must be very short and include:
   1. A strong, attention-grabbing hook.
   2. A clear, concise message.
   3. A compelling call-to-action (CTA).
