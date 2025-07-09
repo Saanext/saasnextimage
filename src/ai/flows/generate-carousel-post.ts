@@ -75,14 +75,14 @@ const generateCarouselPostFlow = ai.defineFlow(
     }
 
     const imagePromises = textOptions.map(async (text) => {
-      let imagePrompt = `A social media post with the text "${text}". Style: ${input.imageStyle}.`;
+      let imagePrompt = '';
       
       if (input.imageStyle === 'Bold Typographic') {
-        imagePrompt = `A visually striking, text-only image for a social media post, in the style of Swiss design. Use a strong grid, bold sans-serif typography, and a minimal color palette to feature the text "${text}". It should be clean, modern, and professional.`;
+        imagePrompt = `A visually striking, text-only image for a social media post in a 2:3 aspect ratio, in the style of Swiss design. Use a strong grid, bold sans-serif typography, and a minimal color palette to feature the text "${text}". It should be clean, modern, and professional. The image must be high-quality.`;
       } else if (input.imageStyle === '3D Art') {
-        imagePrompt = `A 3D artistic render for a social media post, composed with Swiss design principles. The image should be clean, professional, and use a grid-based layout. It should incorporate the text: "${text}".`;
+        imagePrompt = `A high-quality 3D artistic render for a social media post in a 2:3 aspect ratio, composed with Swiss design principles. The image should be clean, professional, and use a grid-based layout. It should incorporate the text: "${text}".`;
       } else if (input.imageStyle === 'Minimal') {
-         imagePrompt = `A minimal and clean social media graphic inspired by Swiss design. It should feature the text "${text}" using a grid layout, sans-serif fonts, and a restricted color palette. Clean, professional, and modern.`;
+         imagePrompt = `A minimal and clean high-quality social media graphic in a 2:3 aspect ratio, inspired by Swiss design. It should feature the text "${text}" using a grid layout, sans-serif fonts, and a restricted color palette. Clean, professional, and modern.`;
       }
       
       const { media } = await ai.generate({

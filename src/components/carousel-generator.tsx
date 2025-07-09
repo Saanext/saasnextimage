@@ -314,13 +314,13 @@ export function CarouselGenerator() {
           )}
           
           {!isLoading && generatedContent && (
-             <Carousel className="w-full max-w-lg" opts={{ loop: true }}>
+             <Carousel className="w-full max-w-sm mx-auto" opts={{ loop: true }}>
              <CarouselContent>
                {generatedContent.contentOptions.map((item, index) => (
                  <CarouselItem key={index}>
                    <div className="p-1">
                      <Card className="bg-background overflow-hidden">
-                       <CardContent className="relative flex flex-col items-center justify-center p-6 aspect-square min-h-[400px]">
+                       <CardContent className="relative flex flex-col items-center justify-center p-6 aspect-[2/3]">
                           <Image
                             src={item.image}
                             alt={`Generated image for post: ${item.content}`}
