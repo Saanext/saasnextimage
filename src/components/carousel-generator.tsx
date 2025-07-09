@@ -15,14 +15,18 @@ import {
   Copy,
   Slice,
   Box,
-  Bold
+  Bold,
+  Image as ImageIcon,
 } from "lucide-react";
 
 import {
-  generateCarouselPost,
-  type GenerateCarouselPostInput,
-  type GenerateCarouselPostOutput,
+  generateCarouselText,
+  type GenerateCarouselTextInput,
+  type GenerateCarouselTextOutput,
 } from "@/ai/flows/generate-carousel-post";
+import {
+  generateCarouselImages,
+} from "@/ai/flows/generate-carousel-images";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -111,32 +115,87 @@ const FormSchema = z.object({
   userIdeas: z.string().optional(),
 });
 
+type FinalGeneratedContent = {
+  contentOptions: {
+    content: string;
+    image: string;
+  }[];
+  overallCaption: string;
+};
+
 export function CarouselGenerator() {
   const { toast } = useToast();
-  const [generatedContent, setGeneratedContent] = React.useState<GenerateCarouselPostOutput | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [generatedContent, setGeneratedContent] = React.useState<FinalGeneratedContent | null>(null);
+  const [generatedText, setGeneratedText] = React.useState<GenerateCarouselTextOutput | null>(null);
+  const [isLoadingText, setIsLoadingText] = React.useState(false);
+  const [isGeneratingImages, setIsGeneratingImages] = React.useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setIsLoading(true);
+  async function onGenerateText(data: z.infer<typeof FormSchema>) {
+    setIsLoadingText(true);
+    setGeneratedText(null);
     setGeneratedContent(null);
     try {
-      const result = await generateCarouselPost(data as GenerateCarouselPostInput);
-      setGeneratedContent(result);
+      const result = await generateCarouselText({
+        niche: data.niche,
+        userIdeas: data.userIdeas,
+      });
+      setGeneratedText(result);
     } catch (error) {
       console.error("Failed to generate content:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to generate content. Please try again.",
+        description: "Failed to generate text content. Please try again.",
       });
     } finally {
-      setIsLoading(false);
+      setIsLoadingText(false);
     }
   }
+  
+  async function onGenerateImages() {
+    const imageStyle = form.getValues("imageStyle");
+    if (!generatedText || !imageStyle) {
+      toast({
+        variant: "destructive",
+        title: "Image Style Required",
+        description: "Please select an image style before generating images.",
+      });
+      return;
+    }
+
+    setIsGeneratingImages(true);
+    setGeneratedContent(null);
+    try {
+      const imageResult = await generateCarouselImages({
+        contentOptions: generatedText.contentOptions,
+        imageStyle: imageStyle,
+      });
+
+      const finalContent: FinalGeneratedContent = {
+        overallCaption: generatedText.overallCaption,
+        contentOptions: generatedText.contentOptions.map((content, index) => ({
+          content: content,
+          image: imageResult.imageOptions[index].image,
+        })),
+      };
+      setGeneratedContent(finalContent);
+
+    } catch (error) {
+      console.error("Failed to generate images:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to generate images. Please try again.",
+      });
+    } finally {
+      setIsGeneratingImages(false);
+    }
+  }
+
 
   const handleCopyCaption = async (caption: string) => {
     try {
@@ -178,7 +237,7 @@ export function CarouselGenerator() {
           </CardDescription>
         </CardHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onGenerateText)}>
             <CardContent>
               <FormField
                 control={form.control}
@@ -273,11 +332,11 @@ export function CarouselGenerator() {
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
+              <Button type="submit" className="w-full" disabled={isLoadingText || isGeneratingImages}>
+                {isLoadingText ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
+                    Generating Text...
                   </>
                 ) : (
                   "Generate Content"
@@ -289,16 +348,66 @@ export function CarouselGenerator() {
       </Card>
       
       <div className="lg:col-span-2">
-        <Card className="h-full min-h-[500px] flex flex-col justify-center items-center shadow-lg">
-          {isLoading && (
+        <Card className="h-full min-h-[500px] flex flex-col justify-center items-center shadow-lg p-4">
+          {isLoadingText && (
             <div className="flex flex-col items-center gap-4 text-muted-foreground">
               <Loader2 className="h-12 w-12 animate-spin text-primary" />
-              <p className="font-semibold">Generating creative posts...</p>
+              <p className="font-semibold">Generating creative text...</p>
               <p>This may take a moment.</p>
             </div>
           )}
 
-          {!isLoading && !generatedContent && (
+          {!isLoadingText && !generatedContent && generatedText && (
+            <div className="w-full max-w-md mx-auto flex flex-col gap-4">
+              <Card>
+                  <CardHeader>
+                    <CardTitle>Generated Content</CardTitle>
+                    <CardDescription>Review the generated text below. When you're ready, click "Generate Images" to create the visuals for your posts.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {generatedText.contentOptions.map((text, index) => (
+                      <div key={index} className="p-3 border rounded-md bg-muted/50">
+                        <p className="font-semibold">Post {index + 1}</p>
+                        <p className="text-sm text-muted-foreground">{text}</p>
+                      </div>
+                    ))}
+                  </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Generated Caption</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {generatedText.overallCaption}
+                  </p>
+                </CardContent>
+              </Card>
+               <Button className="w-full" onClick={onGenerateImages} disabled={isGeneratingImages}>
+                {isGeneratingImages ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating Images...
+                  </>
+                ) : (
+                  <>
+                  <ImageIcon className="mr-2 h-4 w-4"/>
+                  Generate Images
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+          
+          {isGeneratingImages && (
+            <div className="flex flex-col items-center gap-4 text-muted-foreground">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+              <p className="font-semibold">Generating your images...</p>
+              <p>The AI is getting creative now.</p>
+            </div>
+          )}
+
+          {!isLoadingText && !isGeneratingImages && !generatedText && !generatedContent && (
              <div className="text-center text-muted-foreground p-8">
                 <SaasNextLogo className="h-20 w-auto mx-auto text-primary opacity-20" />
                 <h3 className="mt-4 text-2xl font-semibold text-foreground">Your posts will appear here</h3>
@@ -306,7 +415,7 @@ export function CarouselGenerator() {
             </div>
           )}
           
-          {!isLoading && generatedContent && (
+          {generatedContent && (
             <div className="w-full max-w-sm mx-auto flex flex-col gap-4">
               <Carousel className="w-full" opts={{ loop: true }}>
                 <CarouselContent>
