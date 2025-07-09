@@ -53,7 +53,7 @@ const generateCarouselTextPrompt = ai.definePrompt({
   Niche: {{{niche}}}
 
   {{#if userIdeas}}
-  The user has provided some ideas, use them as inspiration: {{{userIdeas}}}
+  The user has provided some ideas. Enhance these ideas, making them more creative and engaging, and use them as the primary inspiration for the posts: {{{userIdeas}}}
   {{/if}}
 
   The carousel post content options should be tailored to the specified niche and designed for high engagement.
