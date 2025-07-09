@@ -12,7 +12,7 @@ import {
   Download,
   Filter,
   Loader2,
-  Share2,
+  Copy,
   Slice,
   Box,
   Bold
@@ -138,26 +138,19 @@ export function CarouselGenerator() {
     }
   }
 
-  const handleShare = async (caption: string) => {
+  const handleCopyCaption = async (caption: string) => {
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "SAASNEXT Carousel Post",
-          text: caption,
-        });
-      } else {
-        await navigator.clipboard.writeText(caption);
-        toast({
-          title: "Copied to clipboard!",
-          description: "Post caption has been copied.",
-        });
-      }
+      await navigator.clipboard.writeText(caption);
+      toast({
+        title: "Copied to clipboard!",
+        description: "The caption has been copied.",
+      });
     } catch (error) {
-      console.error("Failed to share:", error);
+      console.error("Failed to copy:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Could not share or copy caption.",
+        description: "Could not copy caption.",
       });
     }
   };
@@ -314,41 +307,52 @@ export function CarouselGenerator() {
           )}
           
           {!isLoading && generatedContent && (
-             <Carousel className="w-full max-w-sm mx-auto" opts={{ loop: true }}>
-             <CarouselContent>
-               {generatedContent.contentOptions.map((item, index) => (
-                 <CarouselItem key={index}>
-                   <div className="p-1">
-                     <Card className="bg-background overflow-hidden">
-                       <CardContent className="relative p-0 aspect-[2/3]">
-                          <Image
-                            src={item.image}
-                            alt={`Generated image for post: ${item.content}`}
-                            fill
-                            className="object-cover"
-                          />
-                       </CardContent>
-                        <CardContent className="p-4">
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{item.caption}</p>
-                        </CardContent>
-                       <CardFooter className="flex justify-center gap-4 pt-0 pb-4">
-                         <Button variant="outline" size="icon" onClick={() => handleShare(item.caption)}>
-                           <Share2 className="h-5 w-5" />
-                           <span className="sr-only">Share</span>
-                         </Button>
-                         <Button variant="outline" size="icon" onClick={() => handleSave(item.image, index)}>
-                           <Download className="h-5 w-5" />
-                           <span className="sr-only">Save Image</span>
-                         </Button>
-                       </CardFooter>
-                     </Card>
-                   </div>
-                 </CarouselItem>
-               ))}
-             </CarouselContent>
-             <CarouselPrevious className="text-foreground" />
-             <CarouselNext className="text-foreground" />
-           </Carousel>
+            <div className="w-full max-w-sm mx-auto flex flex-col gap-4">
+              <Carousel className="w-full" opts={{ loop: true }}>
+                <CarouselContent>
+                  {generatedContent.contentOptions.map((item, index) => (
+                    <CarouselItem key={index}>
+                      <div className="p-1">
+                        <Card className="bg-background overflow-hidden">
+                          <CardContent className="relative p-0 aspect-[2/3]">
+                              <Image
+                                src={item.image}
+                                alt={`Generated image for post: ${item.content}`}
+                                fill
+                                className="object-cover"
+                              />
+                          </CardContent>
+                          <CardFooter className="flex justify-center gap-4 py-4">
+                            <Button variant="outline" size="icon" onClick={() => handleSave(item.image, index)}>
+                              <Download className="h-5 w-5" />
+                              <span className="sr-only">Save Image</span>
+                            </Button>
+                          </CardFooter>
+                        </Card>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="text-foreground" />
+                <CarouselNext className="text-foreground" />
+              </Carousel>
+              <Card className="bg-background">
+                <CardHeader>
+                  <CardTitle>Generated Caption</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {generatedContent.overallCaption}
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full" onClick={() => handleCopyCaption(generatedContent.overallCaption)}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Caption
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
           )}
         </Card>
       </div>
