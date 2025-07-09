@@ -9,7 +9,7 @@ export default function Home() {
           <div className="inline-block">
              <SaasNextLogo className="h-12 w-auto text-primary" />
           </div>
-          <h1 className="text-4xl font-headline font-bold mt-4 text-foreground">
+          <h1 className="text-3xl sm:text-4xl font-headline font-bold mt-4 text-foreground">
             Social Post Carousel Generator
           </h1>
           <p className="text-muted-foreground mt-2">

@@ -22,7 +22,6 @@ import {
 import {
   generateCarouselText,
   type GenerateCarouselTextInput,
-  type GenerateCarouselTextOutput,
 } from "@/ai/flows/generate-carousel-post";
 import {
   generateCarouselImages,
@@ -120,6 +119,11 @@ const FormSchema = z.object({
   }),
   userIdeas: z.string().optional(),
 });
+
+type GenerateCarouselTextOutput = {
+  contentOptions: string[];
+  overallCaption: string;
+};
 
 type FinalGeneratedContent = {
   contentOptions: {
@@ -415,7 +419,7 @@ export function CarouselGenerator() {
           )}
 
           {!isLoadingText && !isGeneratingImages && !generatedText && !generatedContent && (
-             <div className="text-center text-muted-foreground p-8">
+             <div className="text-center text-muted-foreground p-4 sm:p-8">
                 <SaasNextLogo className="h-20 w-auto mx-auto text-primary opacity-20" />
                 <h3 className="mt-4 text-2xl font-semibold text-foreground">Your posts will appear here</h3>
                 <p>Select a niche and style, then click "Generate Content" to start.</p>
