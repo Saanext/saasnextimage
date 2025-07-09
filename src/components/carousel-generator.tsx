@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -12,6 +13,9 @@ import {
   Filter,
   Loader2,
   Share2,
+  Slice,
+  Box,
+  Bold
 } from "lucide-react";
 
 import {
@@ -76,9 +80,33 @@ const NICHES = [
   },
 ] as const;
 
+const STYLES = [
+  {
+    value: "Minimal",
+    label: "Minimal",
+    icon: Slice,
+    description: "Clean, simple, and elegant design.",
+  },
+  {
+    value: "3D Art",
+    label: "3D Art",
+    icon: Box,
+    description: "Vibrant and eye-catching 3D graphics.",
+  },
+  {
+    value: "Bold Typographic",
+    label: "Bold Typographic",
+    icon: Bold,
+    description: "Text-focused, impactful, and modern.",
+  },
+] as const;
+
 const FormSchema = z.object({
   niche: z.enum(["Web Development", "Lead Generation", "AI Solutions", "CEO Diary"], {
     required_error: "You need to select a niche.",
+  }),
+  imageStyle: z.enum(["Minimal", "3D Art", "Bold Typographic"], {
+    required_error: "You need to select an image style.",
   }),
   userIdeas: z.string().optional(),
 });
@@ -134,19 +162,16 @@ export function CarouselGenerator() {
     }
   };
 
-  const handleSave = (content: string, index: number) => {
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
+  const handleSave = (imageUrl: string, index: number) => {
     const link = document.createElement("a");
-    link.href = url;
-    link.download = `saasnext-post-${index + 1}.txt`;
+    link.href = imageUrl;
+    link.download = `saasnext-post-image-${index + 1}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
     toast({
-      title: "Content saved!",
-      description: "The post has been downloaded as a text file.",
+      title: "Image saved!",
+      description: "The post image has been downloaded.",
     });
   };
 
@@ -154,9 +179,9 @@ export function CarouselGenerator() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <Card className="lg:col-span-1 h-fit shadow-lg">
         <CardHeader>
-          <CardTitle>Choose Your Niche</CardTitle>
+          <CardTitle>Customize Your Post</CardTitle>
           <CardDescription>
-            Select a topic and provide your ideas to generate posts.
+            Select a topic, style and provide your ideas to generate posts.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -167,6 +192,7 @@ export function CarouselGenerator() {
                 name="niche"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel className="text-base font-semibold">Niche</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
@@ -197,6 +223,44 @@ export function CarouselGenerator() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="imageStyle"
+                render={({ field }) => (
+                  <FormItem className="mt-6">
+                    <FormLabel className="text-base font-semibold">Image Style</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-1"
+                      >
+                        {STYLES.map((style) => (
+                          <FormItem key={style.value}>
+                            <FormLabel
+                              className={cn(
+                                "flex items-center space-x-3 rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                              )}
+                            >
+                              <FormControl>
+                                <RadioGroupItem value={style.value} className="sr-only peer" />
+                              </FormControl>
+                              <style.icon className="h-6 w-6 text-primary" />
+                              <div className="flex-1">
+                                <span className="block font-semibold">{style.label}</span>
+                                <span className="block text-sm text-muted-foreground">{style.description}</span>
+                              </div>
+                            </FormLabel>
+                          </FormItem>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="userIdeas"
@@ -245,31 +309,40 @@ export function CarouselGenerator() {
              <div className="text-center text-muted-foreground p-8">
                 <SaasNextLogo className="h-20 w-auto mx-auto text-primary opacity-20" />
                 <h3 className="mt-4 text-2xl font-semibold text-foreground">Your posts will appear here</h3>
-                <p>Select a niche and click "Generate Content" to start.</p>
+                <p>Select a niche and style, then click "Generate Content" to start.</p>
             </div>
           )}
           
           {!isLoading && generatedContent && (
              <Carousel className="w-full max-w-lg" opts={{ loop: true }}>
              <CarouselContent>
-               {generatedContent.contentOptions.map((content, index) => (
+               {generatedContent.contentOptions.map((item, index) => (
                  <CarouselItem key={index}>
                    <div className="p-1">
-                     <Card className="bg-background">
-                       <CardContent className="flex flex-col items-center justify-center p-6 aspect-square min-h-[400px]">
-                          <SaasNextLogo className="h-10 w-auto text-primary mb-6" />
-                         <p className="text-xl md:text-2xl font-semibold text-center leading-relaxed text-foreground">
-                           {content}
-                         </p>
+                     <Card className="bg-background overflow-hidden">
+                       <CardContent className="relative flex flex-col items-center justify-center p-6 aspect-square min-h-[400px]">
+                          <Image
+                            src={item.image}
+                            alt={`Generated image for post: ${item.content}`}
+                            fill
+                            className="object-cover z-0"
+                          />
+                          <div className="absolute inset-0 bg-black/50 z-10" />
+                          <div className="relative z-20 flex flex-col items-center justify-center text-center p-4">
+                            <SaasNextLogo className="h-10 w-auto text-white mb-6" />
+                            <p className="text-xl md:text-2xl font-semibold leading-relaxed text-white">
+                              {item.content}
+                            </p>
+                          </div>
                        </CardContent>
                        <CardFooter className="flex justify-center gap-4">
-                         <Button variant="outline" size="icon" onClick={() => handleShare(content)}>
+                         <Button variant="outline" size="icon" onClick={() => handleShare(item.content)}>
                            <Share2 className="h-5 w-5" />
                            <span className="sr-only">Share</span>
                          </Button>
-                         <Button variant="outline" size="icon" onClick={() => handleSave(content, index)}>
+                         <Button variant="outline" size="icon" onClick={() => handleSave(item.image, index)}>
                            <Download className="h-5 w-5" />
-                           <span className="sr-only">Save</span>
+                           <span className="sr-only">Save Image</span>
                          </Button>
                        </CardFooter>
                      </Card>
