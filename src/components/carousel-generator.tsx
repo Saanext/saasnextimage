@@ -21,10 +21,14 @@ import {
 
 import {
   generateCarouselText,
+  GenerateCarouselTextInputSchema,
   type GenerateCarouselTextInput,
+  type GenerateCarouselTextOutput,
 } from "@/ai/flows/generate-carousel-post";
 import {
   generateCarouselImages,
+  type GenerateCarouselImagesInput,
+  type GenerateCarouselImagesOutput,
 } from "@/ai/flows/generate-carousel-images";
 import { Button } from "@/components/ui/button";
 import {
@@ -119,11 +123,6 @@ const FormSchema = z.object({
   }),
   userIdeas: z.string().optional(),
 });
-
-type GenerateCarouselTextOutput = {
-  contentOptions: string[];
-  overallCaption: string;
-};
 
 type FinalGeneratedContent = {
   contentOptions: {

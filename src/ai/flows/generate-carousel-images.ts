@@ -43,17 +43,16 @@ const generateCarouselImagesFlow = ai.defineFlow(
   async (input) => {
     const imageOptionsPromises = input.contentOptions.map(async (text) => {
       let imagePrompt = '';
-      const colorThemePrompt = "The color palette for any visual elements must be strictly limited to dark black and dark orange. The text must be white. The overall design should be high-contrast and professional.";
-      const signaturePrompt = `Also, include a small, subtle signature "Designer: Deepak Bagada" in one of the bottom corners of the image.`;
-      
+      const basePrompt = `Create a visually stunning, professional social media graphic with a 2:3 aspect ratio. The color palette must be strictly limited to dark black, dark orange, and white text for high contrast. The design must be modern and impactful. Also, include a small, subtle signature "Designer: Deepak Bagada" in one of the bottom corners of the image. The graphic must prominently feature this text: "${text}".`
+
       if (input.imageStyle === 'Bold Typographic') {
-        imagePrompt = `A visually striking, text-only graphic for a social media post, 2:3 aspect ratio, in the style of modern Swiss design. Emphasize a strong grid, masterful use of negative space, and bold, clean sans-serif typography. The layout should be dynamic and create a clear visual hierarchy. Feature this text prominently: "${text}". The design must be modern, professional, and high-impact. ${colorThemePrompt} ${signaturePrompt}`;
+        imagePrompt = `${basePrompt} The style is 'Bold Typographic'. Emphasize a strong grid, masterful use of negative space, and bold, clean sans-serif typography in the style of modern Swiss design. The layout should be dynamic and create a clear visual hierarchy. This is a text-only graphic.`;
       } else if (input.imageStyle === '3D Art') {
-        imagePrompt = `Generate a high-end, abstract 3D artistic render for a social media post, framed in a 2:3 aspect ratio. The composition must follow Swiss design principles, featuring a clean, grid-based layout, and a professional aesthetic. Integrate subtle, realistic lighting and shadows to give depth to geometric 3D shapes. The text "${text}" should be elegantly integrated into the 3D scene. The overall feel should be sophisticated, modern, and visually captivating. ${colorThemePrompt} ${signaturePrompt}`;
+        imagePrompt = `${basePrompt} The style is '3D Art'. Generate a high-end, abstract 3D artistic render. The composition must follow Swiss design principles with a clean, grid-based layout. Integrate subtle, realistic lighting and shadows to give depth to geometric 3D shapes. The text should be elegantly integrated into the 3D scene.`;
       } else if (input.imageStyle === 'Minimal') {
-         imagePrompt = `Design an ultra-minimalist and elegant social media graphic in a 2:3 aspect ratio, deeply inspired by Swiss design. The focus should be on generous use of negative space, a precise grid layout, and crisp, light sans-serif typography. Include only essential elements to convey the message clearly. Feature the following text with sophisticated placement: "${text}". The aesthetic must be clean, professional, modern, and serene. ${colorThemePrompt} ${signaturePrompt}`;
+         imagePrompt = `${basePrompt} The style is 'Minimal'. Design an ultra-minimalist and elegant graphic inspired by Swiss design. The focus is on generous use of negative space, a precise grid layout, and crisp, light sans-serif typography. Include only essential elements to convey the message with sophisticated placement.`;
       } else if (input.imageStyle === 'Realistic') {
-        imagePrompt = `Generate a high-quality, professional image for a social media post with a 2:3 aspect ratio, relevant to the niche of "${input.niche}". The image should have a photorealistic quality in its subjects and composition, but adhere to a specific artistic color palette. The text "${text}" should be integrated into the image with an elegant, modern, and readable font. ${colorThemePrompt} ${signaturePrompt}`;
+        imagePrompt = `${basePrompt} The style is 'Realistic'. Generate a high-quality, professional image relevant to the niche of "${input.niche}". The image must have a photorealistic quality, while adhering to the specified artistic color palette. The text should be integrated into the image with an elegant, modern, and readable font.`;
       }
       
       const imageResult = await ai.generate({

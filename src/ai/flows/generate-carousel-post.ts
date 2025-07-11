@@ -35,13 +35,13 @@ const generateCarouselTextPrompt = ai.definePrompt({
   output: {schema: z.object({ contentOptions: z.array(z.string()).length(3) })},
   prompt: `You are a social media expert specializing in creating engaging, short-form posts for SAASNEXT, inspired by Swiss design principles (clean, grid-based, high-impact).
 
-  Generate exactly 3 different post content options based on the selected niche. Each option must be very short, precise, and engaging. It must include:
-  1. A strong, attention-grabbing hook.
-  2. A clear, concise message.
-  3. A compelling call-to-action (CTA).
+  Generate exactly 3 different post content options based on the selected niche. Each option must be very short, precise, and highly engaging. Each option must include:
+  1. A strong, attention-grabbing hook (3-5 words).
+  2. A clear, concise message (10-15 words).
+  3. A compelling, action-oriented call-to-action (CTA) (3-5 words).
   
   IMPORTANT: The total text for each option must be extremely brief and punchy, suitable for a visually-driven graphic.
-  Do NOT include any hashtags, links, or URLs in your output.
+  Do NOT include any hashtags, links, URLs, or quotation marks in your output.
 
   Niche: {{{niche}}}
 
@@ -60,10 +60,10 @@ const generateOverallCaptionPrompt = ai.definePrompt({
     output: { schema: z.object({ caption: z.string() }) },
     prompt: `You are a social media expert. Create a single, engaging social media caption for a carousel post that contains the following pieces of content.
 
-    The caption MUST follow this structure:
+    The caption MUST follow this exact structure:
     1.  Start with a strong, attention-grabbing hook that summarizes the theme of the carousel.
     2.  Briefly introduce the topics covered in the slides.
-    3.  End with exactly 3 relevant and trending hashtags for the given niche.
+    3.  End with exactly 3 relevant and trending hashtags for the given niche. Do not use the '#' symbol before the hashtags.
 
     The content of the carousel slides is:
     {{#each postContents}}
@@ -95,8 +95,12 @@ const generateCarouselTextFlow = ai.defineFlow(
       postContents: textOptions,
       niche: input.niche,
     });
-    const overallCaption = captionResult.output?.caption || textOptions.join(' ');
     
-    return { contentOptions: textOptions, overallCaption };
+    const rawCaption = captionResult.output?.caption || textOptions.join(' ');
+    // Format hashtags
+    const captionWithHashtags = rawCaption.replace(/(\w+)\s*(\w+)\s*(\w+)$/, '\n\n#$1 #$2 #$3');
+
+
+    return { contentOptions: textOptions, overallCaption: captionWithHashtags };
   }
 );
