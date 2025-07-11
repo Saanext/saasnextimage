@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const NicheEnum = z.enum(['Web Development', 'Lead Generation', 'AI Solutions', 'CEO Diary']);
+const NicheEnum = z.enum(['Web Development', 'Lead Generation', 'AI Solutions', 'CEO Diary', 'Latest News']);
 
 const GenerateCarouselTextInputSchema = z.object({
   niche: NicheEnum.describe('The niche for which to generate carousel post content.'),
@@ -44,6 +44,9 @@ const generateCarouselTextPrompt = ai.definePrompt({
   Do NOT include any hashtags, links, URLs, or quotation marks in your output.
 
   Niche: {{{niche}}}
+  {{#if (eq niche "Latest News")}}
+  When the niche is "Latest News", format the content as a bold, punchy news headline.
+  {{/if}}
 
   {{#if userIdeas}}
   The user has provided some ideas. Enhance these ideas, making them more creative and engaging, and use them as the primary inspiration for the posts: {{{userIdeas}}}

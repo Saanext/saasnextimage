@@ -17,18 +17,17 @@ import {
   Box,
   Bold,
   Image as ImageIcon,
+  Newspaper,
 } from "lucide-react";
 
 import {
   generateCarouselText,
-  GenerateCarouselTextInputSchema,
   type GenerateCarouselTextInput,
   type GenerateCarouselTextOutput,
 } from "@/ai/flows/generate-carousel-post";
 import {
   generateCarouselImages,
   type GenerateCarouselImagesInput,
-  type GenerateCarouselImagesOutput,
 } from "@/ai/flows/generate-carousel-images";
 import { Button } from "@/components/ui/button";
 import {
@@ -85,6 +84,12 @@ const NICHES = [
     icon: BookUser,
     description: "Insights from the life of a CEO.",
   },
+  {
+    value: "Latest News",
+    label: "Latest News",
+    icon: Newspaper,
+    description: "Breaking news and current events.",
+  },
 ] as const;
 
 const STYLES = [
@@ -112,13 +117,19 @@ const STYLES = [
     icon: ImageIcon,
     description: "Photorealistic images of your niche.",
   },
+  {
+    value: "3D Newspaper",
+    label: "3D Newspaper",
+    icon: Newspaper,
+    description: "Headline-style 3D newspaper graphics.",
+  },
 ] as const;
 
 const FormSchema = z.object({
-  niche: z.enum(["Web Development", "Lead Generation", "AI Solutions", "CEO Diary"], {
+  niche: z.enum(["Web Development", "Lead Generation", "AI Solutions", "CEO Diary", "Latest News"], {
     required_error: "You need to select a niche.",
   }),
-  imageStyle: z.enum(["Minimal", "3D Art", "Bold Typographic", "Realistic"], {
+  imageStyle: z.enum(["Minimal", "3D Art", "Bold Typographic", "Realistic", "3D Newspaper"], {
     required_error: "You need to select an image style.",
   }),
   userIdeas: z.string().optional(),

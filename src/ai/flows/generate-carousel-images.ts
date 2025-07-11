@@ -11,8 +11,8 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const ImageStyleEnum = z.enum(['Minimal', '3D Art', 'Bold Typographic', 'Realistic']);
-const NicheEnum = z.enum(['Web Development', 'Lead Generation', 'AI Solutions', 'CEO Diary']);
+const ImageStyleEnum = z.enum(['Minimal', '3D Art', 'Bold Typographic', 'Realistic', '3D Newspaper']);
+const NicheEnum = z.enum(['Web Development', 'Lead Generation', 'AI Solutions', 'CEO Diary', 'Latest News']);
 
 const GenerateCarouselImagesInputSchema = z.object({
   contentOptions: z.array(z.string()).describe('The text content for the carousel posts.'),
@@ -53,6 +53,8 @@ const generateCarouselImagesFlow = ai.defineFlow(
          imagePrompt = `${basePrompt} The style is 'Minimal'. Design an ultra-minimalist and elegant graphic inspired by Swiss design. The focus is on generous use of negative space, a precise grid layout, and crisp, light sans-serif typography. Include only essential elements to convey the message with sophisticated placement.`;
       } else if (input.imageStyle === 'Realistic') {
         imagePrompt = `${basePrompt} The style is 'Realistic'. Generate a high-quality, professional image relevant to the niche of "${input.niche}". The image must have a photorealistic quality, while adhering to the specified artistic color palette. The text should be integrated into the image with an elegant, modern, and readable font.`;
+      } else if (input.imageStyle === '3D Newspaper') {
+        imagePrompt = `${basePrompt} The style is '3D Newspaper'. Create a dramatic 3D render of a newspaper with a bold, attention-grabbing headline. The text should be presented as the main headline on the newspaper. The newspaper itself should have a slightly aged, textured look, with visible columns of blurred placeholder text to simulate a real newspaper layout. The lighting should be dynamic, casting soft shadows to enhance the 3D effect. The overall composition should be artistic and engaging.`;
       }
       
       const imageResult = await ai.generate({
