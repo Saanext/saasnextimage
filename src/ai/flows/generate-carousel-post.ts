@@ -31,7 +31,11 @@ export async function generateCarouselText(input: GenerateCarouselTextInput): Pr
 
 const generateCarouselTextPrompt = ai.definePrompt({
   name: 'generateCarouselTextPrompt',
-  input: {schema: GenerateCarouselTextInputSchema},
+  input: {schema: z.object({
+    niche: NicheEnum,
+    userIdeas: z.string().optional(),
+    isLatestNews: z.boolean(),
+  })},
   output: {schema: z.object({ contentOptions: z.array(z.string()).length(3) })},
   prompt: `You are a social media expert specializing in creating engaging, short-form posts for SAASNEXT, inspired by Swiss design principles (clean, grid-based, high-impact).
 
@@ -44,7 +48,7 @@ const generateCarouselTextPrompt = ai.definePrompt({
   Do NOT include any hashtags, links, URLs, or quotation marks in your output.
 
   Niche: {{{niche}}}
-  {{#if (eq niche "Latest News")}}
+  {{#if isLatestNews}}
   When the niche is "Latest News", format the content as a bold, punchy news headline.
   {{/if}}
 
@@ -87,7 +91,10 @@ const generateCarouselTextFlow = ai.defineFlow(
     outputSchema: GenerateCarouselTextOutputSchema,
   },
   async (input) => {
-    const { output } = await generateCarouselTextPrompt(input);
+    const { output } = await generateCarouselTextPrompt({
+        ...input,
+        isLatestNews: input.niche === 'Latest News',
+    });
     const textOptions = output?.contentOptions || [];
 
     if (textOptions.length === 0) {
