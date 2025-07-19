@@ -37,15 +37,18 @@ const generateCarouselTextPrompt = ai.definePrompt({
     isLatestNews: z.boolean(),
   })},
   output: {schema: z.object({ contentOptions: z.array(z.string()).length(3) })},
-  prompt: `You are a social media expert specializing in creating engaging, short-form posts for SAASNEXT, inspired by Swiss design principles (clean, grid-based, high-impact).
+  prompt: `You are a social media expert specializing in creating engaging, short-form posts for SAASNEXT, inspired by Swiss design principles (clean, grid-based, high-impact). Your primary goal is accuracy and adherence to the specified format.
 
-  Generate exactly 3 different post content options based on the selected niche. Each option must be very short, precise, and highly engaging. Each option must include:
+  Generate exactly 3 different post content options based on the selected niche. Each option must be very short, precise, and highly engaging. Each option must strictly follow these rules:
   1. A strong, attention-grabbing hook (3-5 words).
   2. A clear, concise message (10-15 words).
   3. A compelling, action-oriented call-to-action (CTA) (3-5 words).
   
-  IMPORTANT: The total text for each option must be extremely brief and punchy, suitable for a visually-driven graphic.
-  Do NOT include any hashtags, links, URLs, or quotation marks in your output.
+  CRITICAL INSTRUCTIONS:
+  - The total text for each option must be extremely brief and punchy, suitable for a visually-driven graphic.
+  - There must be absolutely NO spelling mistakes. Double-check your spelling.
+  - Do NOT include any hashtags, links, URLs, or quotation marks in your output. Adhere strictly to this rule.
+  - Ensure the output is a valid JSON object with a 'contentOptions' key containing an array of 3 strings.
 
   Niche: {{{niche}}}
   {{#if isLatestNews}}
@@ -57,7 +60,6 @@ const generateCarouselTextPrompt = ai.definePrompt({
   {{/if}}
 
   The carousel post content options should be tailored to the specified niche and designed for high engagement.
-  Return the options as a JSON object with a 'contentOptions' key containing an array of strings.
   `, 
 });
 
