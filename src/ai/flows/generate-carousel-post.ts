@@ -37,30 +37,30 @@ const generateCarouselTextPrompt = ai.definePrompt({
     isLatestNews: z.boolean(),
   })},
   output: {schema: z.object({ contentOptions: z.array(z.string()).length(3) })},
-  prompt: `You are a social media expert specializing in creating engaging, short-form posts for SAASNEXT, inspired by Swiss design principles (clean, grid-based, high-impact). Your primary goal is accuracy and adherence to the specified format.
+  prompt: `You are a senior copywriter expert, a master of crafting highly persuasive and engaging content for the SAASNEXT brand, which is inspired by clean, high-impact Swiss design. Your writing must be flawless, strategic, and compelling.
 
-  Generate exactly 3 different post content options based on the selected niche. Each option must be very short, precise, and highly engaging. Each option must strictly follow these rules:
-  1. A strong, attention-grabbing hook (3-5 words).
-  2. A clear, concise message (10-15 words).
-  3. A compelling, action-oriented call-to-action (CTA) (3-5 words).
+  Generate exactly 3 different post content options based on the selected niche. Each option must be a masterpiece of brevity and impact, strictly following these rules:
+  1. A powerful, irresistible hook (3-5 words) that stops the scroll.
+  2. A crystal-clear, concise message (10-15 words) that delivers immediate value.
+  3. A strong, action-oriented call-to-action (CTA) (3-5 words) that drives engagement.
   
   CRITICAL INSTRUCTIONS:
   - The total text for each option must be extremely brief and punchy, suitable for a visually-driven graphic.
-  - There must be absolutely NO spelling mistakes. Double-check your spelling.
+  - There must be absolutely NO spelling mistakes. Your reputation as an expert depends on it.
   - Do NOT include any hashtags, links, URLs, or quotation marks in your output. Adhere strictly to this rule.
   - Ensure the output is a valid JSON object with a 'contentOptions' key containing an array of 3 strings.
 
   Niche: {{{niche}}}
   {{#if isLatestNews}}
-  When the niche is "Latest News", format the content as a bold, punchy news headline.
+  When the niche is "Latest News", format the content as a bold, punchy news headline that feels urgent and important.
   {{/if}}
 
   {{#if userIdeas}}
-  The user has provided some ideas. First, analyze their input to identify the core topics. Then, use those topics to generate creative and engaging post content that expands on their original thoughts.
+  The user has provided some ideas. First, analyze their input like a senior strategist to identify the core topics and underlying intent. Then, use those insights to generate exceptionally creative and engaging post content that elevates their original thoughts into expert-level copy.
   User Ideas: {{{userIdeas}}}
   {{/if}}
 
-  The carousel post content options should be tailored to the specified niche and designed for high engagement.
+  The carousel post content options should be tailored to the specified niche and designed for maximum engagement and authority.
   `, 
 });
 
